@@ -1,5 +1,5 @@
 import { AddUser } from '../../../Domain/UseCases/AddUser';
-import { BadRequest, ServerErrorResponse, Success } from '../../Helpers/HttpHelper';
+import { BadRequest, ClientError, ServerErrorResponse, Success } from '../../Helpers/HttpHelper';
 import { Controller } from '../../Protocols/Controller';
 import { HttpRequest } from '../../Protocols/Http';
 import { Validation } from '../../Protocols/Validation';
@@ -23,14 +23,18 @@ export class SignUpController implements Controller {
         return BadRequest(error);
       }
 
-      const user = await this.addUser.add({
+      const userOrError = await this.addUser.add({
         name,
         email,
         password,
         password_confirmation
       });
 
-      return Success(user.right());
+      if (userOrError.isLeft()) {
+        return ClientError(userOrError.left());
+      }
+
+      return Success(userOrError.right());
     } catch (error) {
       return ServerErrorResponse(error as Error);
     }

@@ -201,4 +201,17 @@ describe('SignUpController', () => {
     expect(res.statusCode).toBe(200);
     expect(res.body).toEqual(makeFakeAccount());
   });
+
+  it('should returns a client error if AddUser returna client error', async () => {
+    const { sut, addUserStub } = makeSut();
+
+    vi.spyOn(addUserStub, 'add').mockImplementationOnce((): AddUser.Response => {
+      return Promise.resolve(Either.left(new Error('any Error')));
+    });
+
+    const res = await sut.handle(makeFakeRequest());
+
+    expect(res.statusCode).toBe(404);
+    expect(res.body).toEqual(new Error('any Error'));
+  });
 });

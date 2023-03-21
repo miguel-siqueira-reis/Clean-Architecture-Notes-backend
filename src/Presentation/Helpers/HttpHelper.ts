@@ -24,3 +24,10 @@ export const Success = (body: object): HttpResponse => {
     body
   };
 };
+
+export const ClientError = (error: Error): HttpResponse => {
+  return {
+    statusCode: 404,
+    body: error
+  };
+};
