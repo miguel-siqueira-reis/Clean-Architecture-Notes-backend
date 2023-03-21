@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { AddUserRepository } from '../../Protocols/AddUserRepository';
+import { EncryptPassword } from '../../Protocols/EncryptPassword';
 import { FindByUserRepository } from '../../Protocols/FindByUserRepository';
 import { Either } from '../Errors/Either';
 import { EmailAlreadyExists } from '../Errors/EmailAlreadyExists';
@@ -29,15 +30,27 @@ const makeFindByUserRepository = () => {
   return new FindByUserRepositoryStub();
 };
 
+const makeEncryptPasswordStub = () => {
+  class EncryptPasswordStub implements EncryptPassword {
+    async encrypt(password: string) {
+      return 'encrypt_password';
+    }
+  }
+
+  return new EncryptPasswordStub();
+};
+
 const makeSut = () => {
+  const encryptPasswordStub = makeEncryptPasswordStub();
   const addUserRepositoryStub = makeAddUserRepositoryStub();
   const findByUserRepositoryStub = makeFindByUserRepository();
-  const sut = new DbAddUser(addUserRepositoryStub, findByUserRepositoryStub);
+  const sut = new DbAddUser(addUserRepositoryStub, findByUserRepositoryStub, encryptPasswordStub);
 
   return {
     sut,
     addUserRepositoryStub,
-    findByUserRepositoryStub
+    findByUserRepositoryStub,
+    encryptPasswordStub
   };
 };
 
@@ -60,7 +73,7 @@ describe('DbAddUser Test', () => {
     expect(userRepositorySpy).toBeCalledWith({
       name: user.name,
       email: user.email,
-      password: user.password
+      password: 'encrypt_password'
     });
   });
 
@@ -108,5 +121,16 @@ describe('DbAddUser Test', () => {
     const res = await sut.add(user);
 
     expect(res).toEqual(Either.left(new EmailAlreadyExists()));
+  });
+
+  it('should provider right params to encryptPassword', async () => {
+    const { sut, encryptPasswordStub } = makeSut();
+
+    const encryptPasswordSpy = vi.spyOn(encryptPasswordStub, 'encrypt');
+
+    const user = makeFakeUser();
+    await sut.add(user);
+
+    expect(encryptPasswordSpy).toBeCalledWith(user.password);
   });
 });

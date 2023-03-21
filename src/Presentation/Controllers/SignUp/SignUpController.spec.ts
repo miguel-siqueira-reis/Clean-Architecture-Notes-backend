@@ -9,8 +9,8 @@ import { SignUpController } from './SignUpController';
 
 const makeValidtionStub = () => {
   class ValidationStub implements Validation {
-    validate(input: any): Error | null {
-      return null;
+    validate(input: any): Validation.Response {
+      return Either.right(null);
     }
   }
   return new ValidationStub();
@@ -76,7 +76,7 @@ describe('SignUpController', () => {
     const { sut, validationStub } = makeSut();
 
     vi.spyOn(validationStub, 'validate').mockReturnValueOnce(
-      new InvalidParamError('Parametro email é invalido')
+      Either.left(new InvalidParamError('Parametro email é invalido'))
     );
 
     const req = makeFakeRequest();
@@ -95,7 +95,7 @@ describe('SignUpController', () => {
     const { sut, validationStub } = makeSut();
 
     vi.spyOn(validationStub, 'validate').mockReturnValueOnce(
-      new InvalidParamError('Parametro name é invalido')
+      Either.left(new InvalidParamError('Parametro name é invalido'))
     );
 
     const req = makeFakeRequest();
@@ -114,7 +114,7 @@ describe('SignUpController', () => {
     const { sut, validationStub } = makeSut();
 
     vi.spyOn(validationStub, 'validate').mockReturnValueOnce(
-      new InvalidParamError('Parametro password é invalido')
+      Either.left(new InvalidParamError('Parametro password é invalido'))
     );
 
     const req = makeFakeRequest();
@@ -133,7 +133,7 @@ describe('SignUpController', () => {
     const { sut, validationStub } = makeSut();
 
     vi.spyOn(validationStub, 'validate').mockReturnValueOnce(
-      new InvalidParamError('Parametro password_confirmation é invalido')
+      Either.left(new InvalidParamError('Parametro password_confirmation é invalido'))
     );
 
     const req = makeFakeRequest();

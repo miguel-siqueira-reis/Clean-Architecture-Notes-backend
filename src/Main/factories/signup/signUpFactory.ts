@@ -2,7 +2,7 @@ import { SignUpController } from '../../../Presentation/Controllers/SignUp/SignU
 import { Controller } from '../../../Presentation/Protocols/Controller';
 
 export const makeSingupController = (): Controller => {
-  const validation;
+  const validation = new ValidationSignUpController();
 
   return new SignUpController();
 };

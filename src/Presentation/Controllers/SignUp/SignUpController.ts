@@ -19,8 +19,8 @@ export class SignUpController implements Controller {
       const { name, email, password, password_confirmation } = req.body;
 
       const error = this.validation.validate(req.body);
-      if (error) {
-        return BadRequest(error);
+      if (error.isLeft()) {
+        return BadRequest(error.left());
       }
 
       const userOrError = await this.addUser.add({
