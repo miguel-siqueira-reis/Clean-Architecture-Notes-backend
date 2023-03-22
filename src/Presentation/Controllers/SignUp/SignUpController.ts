@@ -4,17 +4,19 @@ import { Controller } from '../../Protocols/Controller';
 import { HttpRequest } from '../../Protocols/Http';
 import { Validation } from '../../Protocols/Validation';
 
-interface SignUpControllerRequest {
-  name: string;
-  email: string;
-  password: string;
-  password_confirmation: string;
+export namespace SignUpController {
+  export type Request = {
+    name: string;
+    email: string;
+    password: string;
+    password_confirmation: string;
+  };
 }
 
 export class SignUpController implements Controller {
   constructor(private validation: Validation, private addUser: AddUser) {}
 
-  public async handle(req: HttpRequest<SignUpControllerRequest>) {
+  public async handle(req: HttpRequest<SignUpController.Request>) {
     try {
       const { name, email, password, password_confirmation } = req.body;
 

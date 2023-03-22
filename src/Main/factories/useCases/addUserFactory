@@ -1,0 +1,5 @@
+import { DbAddUser } from '../../../Data/useCases/DbAddUser/DbAddUser';
+
+export const makeAddUser = () => {
+  return new DbAddUser();
+};
